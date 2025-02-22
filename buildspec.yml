@@ -1,0 +1,31 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Updating EC2 instance and installing dependencies..."
+      - sudo yum update -y
+      - sudo amazon-linux-extras enable docker
+      - sudo yum install -y docker git
+      - sudo service docker start
+      - sudo usermod -aG docker ec2-user
+      - git clone https://github.com/davidodediran/AWS-Codepipeline.git
+      - cd AWS-Codepipeline
+      - sudo service docker start
+      - sudo usermod -aG docker ec2-user
+      - echo "Dependencies installed successfully!"
+
+  build:
+    commands:
+      - echo "Building the Docker image..."
+      - docker build -t cat-family .
+      - echo "Docker image built successfully!"
+
+  post_build:
+    commands:
+      - echo "Running the new container with index.html..."
+      - docker run -d -p 80:80 --name cat-family cat-family
+
+artifacts:
+  files:
+    - simpleDeploy
