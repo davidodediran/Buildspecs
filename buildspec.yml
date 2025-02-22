@@ -6,17 +6,17 @@ phases:
       - echo "Updating EC2 instance and installing dependencies..."
       - sudo yum update -y
       - sudo yum install -y docker git
-      - sudo systemctl start docker
       - sudo usermod -aG docker $USER
       - git clone https://github.com/davidodediran/AWS-Codepipeline.git
       - cd AWS-Codepipeline
-      - sudo service docker start
       - sudo usermod -aG docker $USER
       - echo "Dependencies installed successfully!"
 
   build:
     commands:
       - echo "Building the Docker image..."
+      - sudo systemctl start docker
+      - sudo service docker start || sudo dockerd &
       - docker build -t cat-family .
       - echo "Docker image built successfully!"
 
